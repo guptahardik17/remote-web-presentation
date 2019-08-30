@@ -22,21 +22,25 @@ var io = require('socket.io').listen(app.listen(port));
 
 // Make the files in the public folder available to the world
 app.use(express.static(__dirname + '/public'));
+app.set('view engine', 'ejs');
+app.use('/', require('./routes/index.js'));
 
 
 // This is a secret key that prevents others from opening your presentation
 // and controlling it. Change it to something that only you know.
 
 var secret = 'kittens';
-
+var soc;
 // Initialize a new socket.io application
-
+var room;
 var presentation = io.on('connection', function (socket) {
 
 	// A new client has come online. Check the secret key and 
 	// emit a "granted" or "denied" message.
 
 	socket.on('load', function(data){
+		secret = data.key;
+		socket.join(secret);
 
 		socket.emit('access', {
 			access: (data.key === secret ? "granted" : "denied")
@@ -49,15 +53,14 @@ var presentation = io.on('connection', function (socket) {
 	socket.on('slide-changed', function(data){
 
 		// Check the secret key again
+		console.log("Slide Changes: "+data.key);
+		
+		// Tell all connected clients to navigate to the new slide			
+		io.sockets.in(data.key)
+		.emit('navigate', {
+			hash: data.hash
+		});
 
-		if(data.key === secret) {
-
-			// Tell all connected clients to navigate to the new slide
-			
-			presentation.emit('navigate', {
-				hash: data.hash
-			});
-		}
 
 	});
 
