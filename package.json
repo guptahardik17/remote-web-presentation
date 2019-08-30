@@ -1,7 +1,7 @@
 {
-  "name": "presentation-controller-from-mobile",
+  "name": "remote-web-presentation",
   "version": "1.0.0",
-  "description": "Play with screens, mobile presentation controller",
+  "description": "Simplified version to give your presentation anywhere from anywhere through web",
   "main": "app.js",
   "scripts": {
     "start": "nodemon app.js",
